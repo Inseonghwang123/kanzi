@@ -165,10 +165,8 @@
     overflow-y: auto;
     position: sticky;
     top: 20px;
-    display: none;
     order: -1;
   }
-  .etymology-panel.visible { display: block; }
   .etymology-panel h3 {
     font-size: 0.85rem;
     color: #ffd93d;
@@ -217,7 +215,7 @@
 
 <div class="etymology-panel" id="etymology-panel">
   <h3>유래 &amp; 암기팁</h3>
-  <div id="tip-content-area"></div>
+  <div id="tip-content-area"><div class="tip-empty">정답을 공개하면<br>유래와 암기팁이<br>표시됩니다.</div></div>
 </div>
 
 <div class="study-area">
@@ -2778,7 +2776,6 @@ function renderTip(kanji) {
     }
   }
   area.innerHTML = html;
-  panel.classList.add('visible');
 }
 
 function renderKanjiStats(kanji) {
@@ -2794,7 +2791,7 @@ function showEmpty() {
   document.getElementById('kanji').textContent = '';
   document.getElementById('details').classList.add('hidden');
   document.getElementById('kanji-stats').innerHTML = '';
-  document.getElementById('etymology-panel').classList.remove('visible');
+  document.getElementById('tip-content-area').innerHTML = '';
   const card = document.getElementById('card');
   const msg = currentMode === 'review'
     ? '못외운 한자가 없습니다!<br><br>전체 모드에서 학습을 시작해보세요.'
@@ -2833,7 +2830,7 @@ function nextKanji() {
   badge.className = 'level-badge level-' + e.level;
   document.getElementById('details').classList.add('hidden');
   document.getElementById('kanji-stats').style.visibility = 'hidden';
-  document.getElementById('etymology-panel').classList.remove('visible');
+  document.getElementById('tip-content-area').innerHTML = '<div class="tip-empty">정답을 공개하면<br>유래와 암기팁이<br>표시됩니다.</div>';
   showButtons('reveal');
   document.getElementById('btn-show').disabled = false;
   revealed = false;
