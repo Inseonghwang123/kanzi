@@ -154,9 +154,71 @@
   .empty-msg {
     color: #666; font-size: 1.1rem; text-align: center; padding: 40px 20px; line-height: 1.8;
   }
+  .etymology-panel {
+    width: 240px;
+    flex: 0 0 240px;
+    background: #1a1a2e;
+    border: 1px solid #2a2a4a;
+    border-radius: 12px;
+    padding: 16px 12px;
+    height: calc(100vh - 40px);
+    overflow-y: auto;
+    position: sticky;
+    top: 20px;
+    display: none;
+    order: -1;
+  }
+  .etymology-panel.visible { display: block; }
+  .etymology-panel h3 {
+    font-size: 0.85rem;
+    color: #ffd93d;
+    margin-bottom: 12px;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+  .tip-kanji {
+    font-size: 3.5rem;
+    text-align: center;
+    margin-bottom: 14px;
+    font-family: 'Noto Sans JP', serif;
+    color: #fff;
+    line-height: 1.1;
+  }
+  .tip-section { margin-bottom: 14px; }
+  .tip-section-title {
+    font-size: 0.72rem;
+    color: #a29bfe;
+    font-weight: bold;
+    margin-bottom: 6px;
+    padding: 2px 8px;
+    background: #2a2a4a;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .tip-content {
+    font-size: 0.88rem;
+    color: #ccc;
+    line-height: 1.75;
+    word-break: keep-all;
+  }
+  .tip-empty {
+    color: #555;
+    font-size: 0.82rem;
+    text-align: center;
+    padding: 16px 4px;
+    line-height: 1.8;
+  }
+  @media (max-width: 900px) {
+    .etymology-panel { display: none !important; }
+  }
 </style>
 </head>
 <body>
+
+<div class="etymology-panel" id="etymology-panel">
+  <h3>유래 &amp; 암기팁</h3>
+  <div id="tip-content-area"></div>
+</div>
 
 <div class="study-area">
 <h1>漢字 랜덤 학습기</h1>
@@ -2447,6 +2509,55 @@ const EXAMPLES = {
   "鼓": [{w:"鼓動",r:"こどう",m:"고동"},{w:"太鼓",r:"たいこ",m:"북"},{w:"鼓舞",r:"こぶ",m:"고무"}],
 };
 
+const TIPS = {
+  "一": { etymology: "막대기 하나를 옆으로 놓은 모양을 본뜬 지사문자.", tip: "가로선 1개 = 하나. 획 수까지 외울 필요 없이 선 하나만 기억!" },
+  "二": { etymology: "막대기 두 개를 놓은 모양.", tip: "가로선 2개 = 둘. 一보다 선이 하나 더 있다." },
+  "三": { etymology: "막대기 세 개를 놓은 모양.", tip: "가로선 3개 = 셋. 一·二·三은 선의 개수가 곧 숫자." },
+  "日": { etymology: "태양을 그린 상형문자. 원래는 동그라미 안에 점이 있었으나, 각진 형태로 변했다.", tip: "네모 안에 가로선 = 태양(해). '날 일'이니 날씨·날짜 관련 단어에 자주 등장." },
+  "月": { etymology: "초승달 모양을 본뜬 상형문자. 삐죽하게 휜 달을 단순화했다.", tip: "日(해)와 비교: 月은 세로획이 비어 있어 달처럼 빛이 덜 하다고 상상." },
+  "山": { etymology: "산봉우리 세 개가 솟아 있는 모양을 그린 상형문자.", tip: "가운데가 제일 높은 봉우리 3개 = 山. 그림 그리듯 외우면 쉽다." },
+  "川": { etymology: "흐르는 강물의 세 줄기를 위에서 내려다본 모양.", tip: "세로 세 줄이 흐르는 물 = 川. 山(산)과 짝으로 외우면 좋다." },
+  "木": { etymology: "나무 줄기와 가지(위), 뿌리(아래)를 그린 상형문자.", tip: "十(십)에 가지·뿌리를 더하면 木. '나무 목'—목요일(木曜日)로 암기." },
+  "火": { etymology: "불꽃이 위로 타오르는 모양을 본뜬 상형문자.", tip: "불꽃이 춤추는 모습. 화요일(火曜日)로 기억하면 편하다." },
+  "水": { etymology: "흐르는 물의 파문·물결을 그린 상형문자.", tip: "가운데 줄기에서 물이 퍼지는 모양. 수요일(水曜日)로 암기." },
+  "金": { etymology: "땅속에 두 덩이의 광물(점)이 묻혀 있는 모양에서 유래. '쇠·금'을 뜻한다.", tip: "人(사람) 아래 두 점 = 금이 묻혀 있다. 금요일(金曜日)로 암기." },
+  "土": { etymology: "땅에서 싹이 돋아나는 모양을 그린 상형문자.", tip: "十(십) 아래 가로선 = 흙. 토요일(土曜日)로 암기." },
+  "人": { etymology: "사람이 옆으로 걷는 모양을 본뜬 상형문자.", tip: "두 획이 다리처럼 벌어진 모습. 人이 부수로 쓰이면 亻(인변)." },
+  "口": { etymology: "입을 정면에서 바라본 모양.", tip: "네모 = 입(口). '출구(出口)·입구(入口)'처럼 통로에 자주 쓰인다." },
+  "目": { etymology: "눈을 옆으로 세운 모양. 원래는 가로로 긴 눈 모양이었다.", tip: "눈동자가 있는 네모 = 目. 日(해)보다 세로로 길쭉하다." },
+  "手": { etymology: "손가락 다섯 개와 손목을 위에서 그린 상형문자.", tip: "손가락처럼 뻗어 나온 획들. 手紙(てがみ/편지)로 기억하면 좋다." },
+  "耳": { etymology: "귀의 바깥 모양을 본뜬 상형문자.", tip: "日 아래 세로획이 내려온 모양 = 귀. 부수로 자주 나온다." },
+  "足": { etymology: "무릎·발목·발바닥을 그린 상형문자. 위의 口는 무릎 관절, 아래는 발.", tip: "口(무릎) + 足의 하단(발) = 다리·발. '불족(不足 부족)'으로 암기." },
+  "女": { etymology: "두 손을 가슴 앞에 모으고 앉은 여성의 모습.", tip: "꿇어앉은 자세의 사람 = 女. 子(아들)와 합치면 好(좋을 호)가 된다!" },
+  "子": { etymology: "강보에 싸인 아기가 두 팔을 벌린 모양.", tip: "머리가 크고 팔이 벌어진 아기 = 子. 女+子=好(좋다)로 함께 외우기." },
+  "大": { etymology: "두 팔과 두 다리를 크게 벌린 사람을 정면에서 그린 모양.", tip: "大·中·小 세트로 암기. 팔다리 쫙 벌린 사람 = 大(크다)." },
+  "小": { etymology: "작은 점 세 개로 '작은 것'을 표현한 지사문자.", tip: "점 세 개가 흩어진 모습 = 小(작다). 大와 반대로 쪼그라든 느낌." },
+  "上": { etymology: "기준선(—) 위에 점이나 짧은 선이 있어 '위'를 나타내는 지사문자.", tip: "위에 점이 찍혀 있다 = 上(위). 下와 세트로 암기." },
+  "下": { etymology: "기준선 아래에 점이 있어 '아래'를 나타내는 지사문자.", tip: "아래에 점이 찍혀 있다 = 下(아래). 上과 세트로 암기." },
+  "中": { etymology: "깃발이 중앙에 꽂힌 모양에서 유래. 가운데·중심을 뜻한다.", tip: "세로선이 네모의 정중앙을 관통 = 中(가운데). 中国·中心 등에서 확인." },
+  "天": { etymology: "大(사람)의 머리 위에 가로선을 그어 '하늘'을 나타낸 지사문자.", tip: "大(사람) 머리 위 = 하늘(天). 天気(てんき 날씨)로 암기." },
+  "気": { etymology: "원래 氣. 쌀(米)에서 피어오르는 수증기(气)를 나타냈다. 현대에 气로 간략화.", tip: "보이지 않는 공기·기운 = 気. '元気(건강)'·'気持ち(기분)'로 친숙하게." },
+  "森": { etymology: "나무(木)가 세 그루 모여 울창한 숲을 표현한 회의문자.", tip: "木을 세 개 합치면 森(숲). 木木=林(수풀 림), 木木木=森(숲 삼) 순서로 외우기." },
+  "林": { etymology: "나무(木)가 두 그루 모인 회의문자. 큰 숲보다 작은 수풀.", tip: "木 두 개 = 林(수풀). 세 개면 森(숲)." },
+  "明": { etymology: "日(해)과 月(달)이 합쳐진 회의문자. 해와 달이 함께 있으니 밝다.", tip: "日+月=明(밝다). 가장 직관적인 회의문자 중 하나." },
+  "休": { etymology: "人(사람)이 木(나무)에 기대어 쉬는 모습을 그린 회의문자.", tip: "나무 옆에 사람이 기댄 모습 = 休(쉬다). '휴식(休息)'으로 암기." },
+  "字": { etymology: "宀(지붕·집) 아래 子(아이). 집에서 아이를 가르치며 글자를 익히는 모습.", tip: "집 안의 아이 = 글자를 배우다 = 字. 文字·漢字에서 쓰인다." },
+  "学": { etymology: "원래 學. 두 손으로 산가지를 쥐고 배우는 아이(子)를 그린 회의문자.", tip: "学+校=学校(학교). 子(아이)가 들어 있어 배움과 연결하기 쉽다." },
+  "語": { etymology: "言(말씀 언)과 吾(나 오)의 형성문자. '吾'가 음을 담당(ゴ).", tip: "言(말)+吾(나) = 語(말·언어). 日本語·英語처럼 '~어(言語)' 할 때 쓰인다." },
+  "言": { etymology: "입(口) 위에 음파 모양을 더해 말이 나오는 것을 표현한 상형문자.", tip: "口(입)에서 말이 흘러나오는 모습 = 言(말). 言葉(ことば/말)로 암기." },
+  "花": { etymology: "艹(풀 초)와 化(될 화)의 형성문자. 化가 음(カ·はな)을 나타낸다.", tip: "풀(艹)이 변화해(化) 피어나는 것 = 花(꽃). 花見(하나미 꽃구경)으로 연상." },
+  "高": { etymology: "높은 성루·망대의 모습을 그린 상형문자. 지붕·창문·기둥이 겹쳐 있다.", tip: "탑처럼 겹겹이 쌓인 구조 = 高(높다). 最高(최고)·高校(고교)로 암기." },
+  "長": { etymology: "머리카락이 긴 노인이 지팡이를 짚은 모양. 길다·오래되다를 뜻한다.", tip: "긴 머리 노인 = 長(길다·우두머리). 社長(사장)·成長(성장)으로 암기." },
+  "心": { etymology: "심장의 모양을 본뜬 상형문자. 心臓(심장)·心(마음)은 같은 뿌리.", tip: "구불구불한 세 점 = 심장 박동 = 心(마음). 부수로 쓰일 때는 忄(심방변)." },
+  "愛": { etymology: "心(마음)을 품고 발을 멈추어(夂) 되돌아보는 모습. 애틋한 마음.", tip: "마음(心)을 품은 복잡한 글자 = 愛(사랑). 愛情·愛着으로 암기." },
+  "体": { etymology: "원래 體. 人(사람)+本(근본)으로 단순화. 몸이 사람의 근본.", tip: "亻(인변)+本(근본) = 体(몸). '体育'(체육)·'体験'(체험)으로 암기." },
+  "道": { etymology: "首(머리·방향)와 辶(걷다)의 회의문자. 방향을 정해 걷는 것 = 길·도리.", tip: "辶(나아가다)+首(머리) = 道(길·도). 道路·道徳처럼 방향·원리에 쓰인다." },
+  "食": { etymology: "그릇(皀) 위에 뚜껑이 씌워진 모양에서 유래. 먹을 것을 담은 그릇.", tip: "뚜껑 덮인 그릇 = 食(먹다). 食べる·食事(식사)로 암기." },
+  "見": { etymology: "目(눈) 위에 人(사람)의 다리를 그려 '눈을 크게 뜨고 보는 사람'을 표현.", tip: "目(눈)+발 = 見(보다). 見る·意見(의견)으로 암기." },
+  "書": { etymology: "붓(聿)으로 쓰는 행위를 나타낸 글자. 아래 曰은 가로선이 쌓인 문서.", tip: "붓으로 가로선 긋기 = 書(쓰다). 図書館(도서관)·読書(독서)로 암기." },
+  "読": { etymology: "言(말)+売(팔다→音 독)의 형성문자. 売가 음(ドク·よむ)을 담당.", tip: "言(말)을 팔듯 소리 내다 = 読(읽다). 読書·読む로 암기." },
+};
+
 let activeLevels = { n3: true, n2: true, n1: true };
 let pool = [];
 let seen = 0;
@@ -2651,6 +2762,25 @@ function renderExamples(kanji) {
     }).join('');
 }
 
+function renderTip(kanji) {
+  const panel = document.getElementById('etymology-panel');
+  const area = document.getElementById('tip-content-area');
+  const tip = typeof TIPS !== 'undefined' && TIPS[kanji];
+  let html = '<div class="tip-kanji">' + kanji + '</div>';
+  if (!tip) {
+    html += '<div class="tip-empty">이 한자의 유래·팁 정보가<br>아직 준비되지 않았습니다.</div>';
+  } else {
+    if (tip.etymology) {
+      html += '<div class="tip-section"><span class="tip-section-title">형성 유래</span><div class="tip-content">' + tip.etymology + '</div></div>';
+    }
+    if (tip.tip) {
+      html += '<div class="tip-section"><span class="tip-section-title">암기 팁</span><div class="tip-content">' + tip.tip + '</div></div>';
+    }
+  }
+  area.innerHTML = html;
+  panel.classList.add('visible');
+}
+
 function renderKanjiStats(kanji) {
   const rec = getRecord(kanji);
   const el = document.getElementById('kanji-stats');
@@ -2664,6 +2794,7 @@ function showEmpty() {
   document.getElementById('kanji').textContent = '';
   document.getElementById('details').classList.add('hidden');
   document.getElementById('kanji-stats').innerHTML = '';
+  document.getElementById('etymology-panel').classList.remove('visible');
   const card = document.getElementById('card');
   const msg = currentMode === 'review'
     ? '못외운 한자가 없습니다!<br><br>전체 모드에서 학습을 시작해보세요.'
@@ -2702,6 +2833,7 @@ function nextKanji() {
   badge.className = 'level-badge level-' + e.level;
   document.getElementById('details').classList.add('hidden');
   document.getElementById('kanji-stats').style.visibility = 'hidden';
+  document.getElementById('etymology-panel').classList.remove('visible');
   showButtons('reveal');
   document.getElementById('btn-show').disabled = false;
   revealed = false;
@@ -2716,6 +2848,7 @@ function revealAnswer() {
   document.getElementById('btn-show').disabled = true;
   showButtons('judge');
   revealed = true;
+  if (currentEntry) renderTip(currentEntry.kanji);
 }
 
 function markKnown() {
