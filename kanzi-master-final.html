@@ -2535,7 +2535,7 @@ function updateModeCounts() {
     if (!activeLevels[level]) continue;
     for (const e of entries) {
       const rec = h[e.kanji];
-      if (rec && rec.fail > 0) reviewCount++;
+      if (rec && rec.fail > 0 && rec.ok === 0) reviewCount++; // pool 조건과 일치
       if (rec && rec.ok > 0) masteredCount++;
     }
   }
@@ -2616,9 +2616,19 @@ function toggleLevel(level) {
 }
 
 function updateStats() {
+  const h = loadHistory();
+  let masteredCount = 0, totalCount = 0;
+  for (const [level, entries] of Object.entries(DATA)) {
+    if (!activeLevels[level]) continue;
+    totalCount += entries.length;
+    for (const e of entries) {
+      const rec = h[e.kanji];
+      if (rec && rec.ok > 0) masteredCount++;
+    }
+  }
   const modeLabel = currentMode === 'review' ? ' (못외운 한자)' : currentMode === 'mastered' ? ' (복습)' : '';
-  document.getElementById('stats').textContent = seen + ' / ' + pool.length + '자 학습' + modeLabel;
-  document.getElementById('progress').style.width = (pool.length > 0 ? (seen / pool.length) * 100 : 0) + '%';
+  document.getElementById('stats').textContent = masteredCount + ' / ' + totalCount + '자 외움' + modeLabel;
+  document.getElementById('progress').style.width = (totalCount > 0 ? (masteredCount / totalCount) * 100 : 0) + '%';
 }
 
 function showButtons(state) {
