@@ -1,9 +1,11 @@
-const CACHE_NAME = 'kanji-app-v1';
+const CACHE_NAME = 'kanji-app-v2';
 const ASSETS = [
   './kanzi-master-final.html',
   './kanji_meanings.json',
   './tips_output.js',
-  './manifest.json'
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', event => {
