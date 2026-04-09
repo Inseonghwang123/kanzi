@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>아이콘 생성</title></head>
+<body>
+<p>버튼을 눌러 아이콘을 다운로드하세요. 다운로드된 파일을 앱 폴더에 저장하세요.</p>
+<button onclick="generate(192)">icon-192.png 생성</button>
+<button onclick="generate(512)">icon-512.png 생성</button>
+<canvas id="c" style="display:none"></canvas>
+<script>
+function generate(size) {
+  const canvas = document.getElementById('c');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+
+  // 배경
+  ctx.fillStyle = '#0f0f1a';
+  ctx.fillRect(0, 0, size, size);
+
+  // 둥근 모서리 배경
+  const r = size * 0.2;
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(size - r, 0);
+  ctx.quadraticCurveTo(size, 0, size, r);
+  ctx.lineTo(size, size - r);
+  ctx.quadraticCurveTo(size, size, size - r, size);
+  ctx.lineTo(r, size);
+  ctx.quadraticCurveTo(0, size, 0, size - r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
+  ctx.closePath();
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fill();
+
+  // 한자 텍스트
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `bold ${size * 0.5}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('漢', size / 2, size * 0.42);
+
+  // 하단 소문자
+  ctx.fillStyle = '#6c63ff';
+  ctx.font = `${size * 0.14}px sans-serif`;
+  ctx.fillText('한자학습', size / 2, size * 0.78);
+
+  canvas.toBlob(blob => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `icon-${size}.png`;
+    a.click();
+  });
+}
+</script>
+</body>
+</html>
