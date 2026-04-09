@@ -209,6 +209,43 @@
   @media (max-width: 900px) {
     .etymology-panel { display: none !important; }
   }
+  @media (max-width: 700px) {
+    body {
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 8px;
+      gap: 12px;
+    }
+    .kanji-list-panel {
+      display: none !important;
+    }
+    .study-area {
+      width: 100%;
+      max-width: 100%;
+    }
+    h1 { font-size: 1.2rem; margin-bottom: 8px; }
+    .card {
+      max-width: 100%;
+      padding: 24px 16px;
+      min-height: 300px;
+    }
+    .kanji { font-size: 5rem; }
+    .controls button {
+      padding: 8px 14px;
+      font-size: 0.85rem;
+    }
+    .btn {
+      padding: 14px 20px;
+      font-size: 0.95rem;
+      min-width: 80px;
+    }
+    .actions { gap: 8px; }
+    .mode-tabs button {
+      padding: 8px 12px;
+      font-size: 0.8rem;
+    }
+    .progress-bar { max-width: 100%; }
+  }
 </style>
 </head>
 <body>
